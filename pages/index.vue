@@ -34,15 +34,20 @@
               </v-flex>
             </v-layout>
           </v-container>
-          <v-btn class="mr-4" @click="submit">submit</v-btn>
+          <v-btn class="mr-4" @click="submit">追加</v-btn>
         </v-form>
         <h1>
           商品一覧
         </h1>
         <div v-for="item in reverseItems" :key="item.id">
-          <p>タイトル: {{ item.title }}</p>
+          <nuxt-link :to="{ name: 'items-id', params: { id: item.id } }"
+            ><p>タイトル: {{ item.title }}</p></nuxt-link
+          >
           <p>説明: {{ item.description }}</p>
           <p>値段: {{ item.price }}</p>
+          <p>値段: {{ item.created_at }}</p>
+          <p>値段: {{ item.updated_at }}</p>
+          <img :src="item.image" />
         </div>
       </div>
     </v-flex>

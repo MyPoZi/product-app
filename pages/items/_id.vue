@@ -3,13 +3,40 @@
     <v-flex xs12 sm8 md6>
       <div class="text-center">
         <h1>
-          商品一覧
+          商品詳細
         </h1>
-        <div>
-          <p>タイトル: {{ item.title }}</p>
-          <p>説明: {{ item.description }}</p>
-          <p>値段: {{ item.price }}</p>
-        </div>
+        <v-form>
+          <v-container grid-list-xl>
+            <v-layout wrap>
+              <v-flex xs12>
+                <v-text-field
+                  v-model="title"
+                  label="title"
+                  required
+                ></v-text-field>
+              </v-flex>
+              <v-flex xs12>
+                <v-text-field
+                  v-model="description"
+                  label="description"
+                ></v-text-field>
+              </v-flex>
+              <v-flex xs12>
+                <v-text-field
+                  v-model="price"
+                  type="number"
+                  label="price"
+                ></v-text-field>
+              </v-flex>
+              <div>
+                <p>作成日: {{ item.created_at }}</p>
+                <p>更新日: {{ item.updated_at }}</p>
+                <img :src="item.image" />
+              </div>
+            </v-layout>
+          </v-container>
+          <v-btn class="mr-4" @click="submit">更新</v-btn>
+        </v-form>
       </div>
     </v-flex>
   </v-layout>
@@ -20,10 +47,10 @@ export default {
   components: {},
   data() {
     return {
+      item: '',
       title: '',
       description: '',
       price: 0,
-      item: '',
       uploadedImage: ''
     }
   },
@@ -40,40 +67,33 @@ export default {
         console.log('response error', error)
         return false
       })
-    console.log(response.data)
-    console.log(response.data.item)
-    return { item: response.data.item }
+    return {
+      item: response.data.item,
+      title: response.data.item.title,
+      description: response.data.item.description,
+      price: response.data.item.price
+    }
   },
   methods: {
     async submit() {
       await this.$axios
-        .$post('/items', {
+        .$patch(`/items/${this.$route.params.id}`, {
           item: {
             title: this.title,
             description: this.description,
-            price: parseInt(this.price, 10),
-            image: this.uploadedImage
+            price: parseInt(this.price, 10)
           }
         })
         .then((response) => {
-          console.log('response data', response)
-          this.items.push(response.data)
+          console.log('response data', response.data.item)
+          this.item = response.data.item
+          this.title = response.data.item.title
+          this.description = response.data.item.description
+          this.price = response.data.item.price
         })
         .catch((error) => {
           console.log('response error', error)
         })
-    },
-    onFileChange(e) {
-      const files = e.target.files || e.dataTransfer.files
-      this.createImage(files[0])
-    },
-    // アップロードした画像を表示
-    createImage(file) {
-      const reader = new FileReader()
-      reader.onload = (e) => {
-        this.uploadedImage = e.target.result
-      }
-      reader.readAsDataURL(file)
     }
   }
 }
