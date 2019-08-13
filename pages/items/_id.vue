@@ -36,6 +36,13 @@
             </v-layout>
           </v-container>
           <v-btn class="mr-4" @click="submit">更新</v-btn>
+          <v-snackbar v-model="snackbar" :timeout="timeout">
+            {{ update_text }}
+            <v-btn color="blue" text @click="snackbar = false">
+              Close
+            </v-btn>
+          </v-snackbar>
+          <v-btn class="mr-4" color="red" @click="remove">削除</v-btn>
         </v-form>
       </div>
     </v-flex>
@@ -51,7 +58,10 @@ export default {
       title: '',
       description: '',
       price: 0,
-      uploadedImage: ''
+      uploadedImage: '',
+      snackbar: false,
+      update_text: '更新しました。',
+      timeout: 2000
     }
   },
   computed: {
@@ -90,6 +100,18 @@ export default {
           this.title = response.data.item.title
           this.description = response.data.item.description
           this.price = response.data.item.price
+          this.snackbar = true
+        })
+        .catch((error) => {
+          console.log('response error', error)
+        })
+    },
+    async remove() {
+      await this.$axios
+        .$delete(`/items/${this.$route.params.id}`)
+        .then((response) => {
+          console.log('response data', response.data.item)
+          this.$router.push(`/`)
         })
         .catch((error) => {
           console.log('response error', error)

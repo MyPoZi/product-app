@@ -1,7 +1,9 @@
 <template>
-  <v-container>
-    <nuxt />
-  </v-container>
+  <v-app style="background: #ccc; color: black">
+    <v-container>
+      <nuxt />
+    </v-container>
+  </v-app>
 </template>
 
 <script>

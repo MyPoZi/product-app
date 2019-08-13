@@ -5,7 +5,7 @@
         <h1>
           商品追加
         </h1>
-        <v-form>
+        <v-form class="item-add">
           <v-container grid-list-xl>
             <v-layout wrap>
               <v-flex xs12>
@@ -29,6 +29,7 @@
                 ></v-text-field>
               </v-flex>
               <v-flex xs12>
+                <p>画像</p>
                 <input type="file" @change="onFileChange" />
                 <img v-show="uploadedImage" :src="uploadedImage" />
               </v-flex>
@@ -36,9 +37,9 @@
           </v-container>
           <v-btn class="mr-4" @click="submit">追加</v-btn>
         </v-form>
-        <h1>
+        <h2>
           商品一覧
-        </h1>
+        </h2>
         <div v-for="item in reverseItems" :key="item.id">
           <nuxt-link :to="{ name: 'items-id', params: { id: item.id } }"
             ><p>タイトル: {{ item.title }}</p></nuxt-link
@@ -113,3 +114,8 @@ export default {
   }
 }
 </script>
+<style scoped>
+.item-add {
+  margin: 50px 0;
+}
+</style>
