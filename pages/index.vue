@@ -37,6 +37,15 @@
           </v-container>
           <v-btn class="mr-4" @click="submit">追加</v-btn>
         </v-form>
+        <h1>
+          検索
+        </h1>
+        <v-form @submit.prevent="search">
+          <v-text-field v-model="word" label="検索"></v-text-field>
+          <div class="text-center">
+            <v-btn type="submit">検索</v-btn>
+          </div>
+        </v-form>
         <h2>
           商品一覧
         </h2>
@@ -64,7 +73,8 @@ export default {
       description: '',
       price: 0,
       items: '',
-      uploadedImage: ''
+      uploadedImage: '',
+      word: ''
     }
   },
   computed: {
@@ -94,6 +104,23 @@ export default {
         .then((response) => {
           console.log('response data', response)
           this.items.push(response.data.item)
+        })
+        .catch((error) => {
+          console.log('response error', error)
+        })
+    },
+    async search() {
+      await this.$axios
+        .$get('/items/search', {
+          params: {
+            word: this.word
+          }
+        })
+        .then((response) => {
+          console.log('response data', response)
+          if (Object.keys(response).length) {
+            this.items = response.data.items
+          }
         })
         .catch((error) => {
           console.log('response error', error)
