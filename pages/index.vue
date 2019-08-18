@@ -5,13 +5,14 @@
         <h1>
           商品追加
         </h1>
-        <v-form class="item-add">
+        <v-form ref="form" v-model="valid" class="item-add">
           <v-container grid-list-xl>
             <v-layout wrap>
               <v-flex xs12>
                 <v-text-field
                   v-model="title"
                   label="title"
+                  :rules="nameRules"
                   required
                 ></v-text-field>
               </v-flex>
@@ -27,6 +28,15 @@
                   type="number"
                   label="price"
                 ></v-text-field>
+              </v-flex>
+              <v-flex xs12>
+                <v-select
+                  v-model="selectShops"
+                  :items="shops"
+                  label="店舗名"
+                  :rules="shopRules"
+                  required
+                ></v-select>
               </v-flex>
               <v-flex xs12>
                 <p>画像</p>
@@ -53,6 +63,7 @@
           <nuxt-link :to="{ name: 'items-id', params: { id: item.id } }"
             ><p>タイトル: {{ item.title }}</p></nuxt-link
           >
+          <p v-if="item.shop">店舗名: {{ item.shop.name }}</p>
           <p>説明: {{ item.description }}</p>
           <p>値段: {{ item.price }}</p>
           <p>値段: {{ item.created_at }}</p>
@@ -69,18 +80,29 @@ export default {
   components: {},
   data() {
     return {
+      valid: true,
       title: '',
       description: '',
       price: 0,
       items: '',
       uploadedImage: '',
-      word: ''
+      word: '',
+      shops: '',
+      selectShops: '',
+      nameRules: [
+        (v) => !!v || 'Name is required',
+        (v) => v.length <= 100 || 'Name must be less than 100 characters'
+      ],
+      shopRules: [(v) => !!v || 'Shop is required']
     }
   },
   computed: {
     // 配列の要素順番を逆順にする
     reverseItems() {
-      return this.items.slice().reverse()
+      if (Object.keys(this.items).length) {
+        return this.items.slice().reverse()
+      }
+      return false
     }
   },
   async asyncData({ app }) {
@@ -88,17 +110,27 @@ export default {
       console.log('response error', error)
       return false
     })
-    return { items: response.data.items }
+    const responseShop = await app.$axios
+      .$get('/shops/names')
+      .catch((error) => {
+        console.log('response error', error)
+        return false
+      })
+    return { items: response.data.items, shops: responseShop.data.shop_names }
   },
   methods: {
     async submit() {
+      if (!this.$refs.form.validate()) {
+        return 0
+      }
       await this.$axios
         .$post('/items', {
           item: {
             title: this.title,
             description: this.description,
             price: parseInt(this.price, 10),
-            image: this.uploadedImage
+            image: this.uploadedImage,
+            shop_id: this.selectShops
           }
         })
         .then((response) => {
@@ -118,6 +150,7 @@ export default {
         })
         .then((response) => {
           console.log('response data', response)
+          this.items = {}
           if (Object.keys(response).length) {
             this.items = response.data.items
           }
