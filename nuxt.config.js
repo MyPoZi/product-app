@@ -52,7 +52,7 @@ export default {
    */
   axios: {
     // baseURL: 'https://product-app-api-s.herokuapp.com/api/v1/'
-    baseURL: 'https://product-app-s.herokuapp.com/api/v1'
+    baseURL: 'https://product-app-api-s.herokuapp.com/api/v1'
   },
   /*
    ** vuetify module configuration
