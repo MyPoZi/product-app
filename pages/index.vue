@@ -2,6 +2,11 @@
   <v-layout>
     <v-flex xs12 sm8 md6>
       <div class="text-center">
+        <h2>
+          <nuxt-link to="/shops">
+            店舗管理へ
+          </nuxt-link>
+        </h2>
         <h1>
           商品追加
         </h1>
@@ -66,8 +71,8 @@
           <p v-if="item.shop">店舗名: {{ item.shop.name }}</p>
           <p>説明: {{ item.description }}</p>
           <p>値段: {{ item.price }}</p>
-          <p>値段: {{ item.created_at }}</p>
-          <p>値段: {{ item.updated_at }}</p>
+          <p>作成: {{ item.created_at }}</p>
+          <p>更新: {{ item.updated_at }}</p>
           <img :src="item.image" />
         </div>
       </div>
