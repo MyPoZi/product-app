@@ -10,7 +10,10 @@
         <h1>
           商品追加
         </h1>
-        <v-form ref="form" v-model="valid" class="item-add">
+        <h2>
+          {{ errors }}
+        </h2>
+        <v-form ref="form" class="item-add">
           <v-container grid-list-xl>
             <v-layout wrap>
               <v-flex xs12>
@@ -18,7 +21,6 @@
                   v-model="title"
                   label="title"
                   :rules="nameRules"
-                  required
                 ></v-text-field>
               </v-flex>
               <v-flex xs12>
@@ -40,7 +42,6 @@
                   :items="shops"
                   label="店舗名"
                   :rules="shopRules"
-                  required
                 ></v-select>
               </v-flex>
               <v-flex xs12>
@@ -51,6 +52,12 @@
             </v-layout>
           </v-container>
           <v-btn class="mr-4" @click="submit">追加</v-btn>
+          <v-snackbar v-model="snackbar" :timeout="timeout">
+            {{ update_text }}
+            <v-btn color="blue" text @click="snackbar = false">
+              Close
+            </v-btn>
+          </v-snackbar>
         </v-form>
         <h1>
           検索
@@ -66,7 +73,7 @@
         </h2>
         <div v-for="item in reverseItems" :key="item.id">
           <nuxt-link :to="{ name: 'items-id', params: { id: item.id } }"
-            ><p>タイトル: {{ item.title }}</p></nuxt-link
+            ><p>商品名: {{ item.title }}</p></nuxt-link
           >
           <p v-if="item.shop">店舗名: {{ item.shop.name }}</p>
           <p>説明: {{ item.description }}</p>
@@ -94,11 +101,15 @@ export default {
       word: '',
       shops: '',
       selectShops: '',
+      snackbar: false,
+      update_text: '作成しました。',
+      timeout: 2000,
       nameRules: [
         (v) => !!v || 'Name is required',
         (v) => v.length <= 100 || 'Name must be less than 100 characters'
       ],
-      shopRules: [(v) => !!v || 'Shop is required']
+      shopRules: [(v) => !!v || 'Shop is required'],
+      errors: ''
     }
   },
   computed: {
@@ -141,9 +152,14 @@ export default {
         .then((response) => {
           console.log('response data', response)
           this.items.push(response.data.item)
+          this.snackbar = true
+          this.clearItemForm()
+          this.$refs.form.resetValidation()
+          this.errors = ''
         })
         .catch((error) => {
           console.log('response error', error)
+          this.errors = error
         })
     },
     async search() {
@@ -175,6 +191,13 @@ export default {
         this.uploadedImage = e.target.result
       }
       reader.readAsDataURL(file)
+    },
+    clearItemForm() {
+      this.title = ''
+      this.description = ''
+      this.price = 0
+      this.uploadedImage = ''
+      this.selectShops = ''
     }
   }
 }

@@ -27,6 +27,7 @@
                 :key="item.id"
                 class="shop-product width-100"
               >
+                <p>商品名: {{ item.title }}</p>
                 <p>説明: {{ item.description }}</p>
                 <p>値段: {{ item.price }}</p>
                 <p>作成: {{ item.created_at }}</p>

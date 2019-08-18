@@ -10,6 +10,9 @@
         <h1>
           店舗追加
         </h1>
+        <h2>
+          {{ errors }}
+        </h2>
         <v-form ref="form" v-model="valid" class="item-add">
           <v-container grid-list-xl>
             <v-layout wrap>
@@ -24,6 +27,12 @@
             </v-layout>
           </v-container>
           <v-btn class="mr-4" @click="submit">追加</v-btn>
+          <v-snackbar v-model="snackbar" :timeout="timeout">
+            {{ update_text }}
+            <v-btn color="blue" text @click="snackbar = false">
+              Close
+            </v-btn>
+          </v-snackbar>
         </v-form>
         <h2>
           店舗一覧
@@ -48,10 +57,14 @@ export default {
       valid: true,
       name: '',
       shops: '',
+      snackbar: false,
+      update_text: '作成しました。',
+      timeout: 2000,
       nameRules: [
         (v) => !!v || 'Name is required',
         (v) => v.length <= 100 || 'Name must be less than 100 characters'
-      ]
+      ],
+      errors: ''
     }
   },
   computed: {
@@ -85,9 +98,12 @@ export default {
         .then((response) => {
           console.log('response data', response)
           this.shops.push(response.data.shop)
+          this.snackbar = true
+          this.errors = ''
         })
         .catch((error) => {
           console.log('response error', error)
+          this.errors = 'エラーが発生しました。' + error
         })
     }
   }
